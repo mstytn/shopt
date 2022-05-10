@@ -1,0 +1,27 @@
+@charset 'UTF-8';
+@use 'sass:color' as color;
+@use 'sass:math' as math;
+
+$transparentColors: (
+  "black": #000,
+  "white": #fff
+);
+$masterColors: (
+  "pink": #c78bda
+);
+
+:root {
+  @each $name, $color in $transparentColors {
+    --color-#{$name}: #{$color};
+    @for $i from 1 to 10 {
+      --color-#{$name}-#{$i}: #{transparentize($color, math.div((10-$i), 10))};  
+    }
+  }
+  @each $name, $color in $masterColors {
+    --color-#{$name}: #{$color};
+  }
+}
+
+body {
+  background-color: var(--color-white);
+}
