@@ -1,1 +1,49 @@
 @use 'base' as *;
+
+.toaster {
+  position: fixed;
+  width: 20rem;
+  height: 50rem;
+  // border: 1px solid black;
+  right: 3rem;
+  top: 3rem;
+  background-color: transparent;
+  border-radius: 1rem;
+}
+
+.toast {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: .5rem;
+  margin-bottom: 1rem;
+  border: 1px solid lightgray;
+  box-shadow: 0 2px 5px rgba(0,0,0, 0.3);
+  opacity: 0;
+  transition: opacity 300ms linear;
+  & * {
+    margin: 0;
+  }
+  background-color: rgb(61, 61, 61);
+  color: white;
+  & &__icon {
+    color: rgb(220, 12, 23);
+  }
+  & &__header {
+    font-size: 1em;
+    letter-spacing: 1px;
+    margin-bottom: .5rem;
+  }
+  & &__text {
+    font-size: .8em;
+    letter-spacing: 1px;
+  }
+  .fade-out {
+    opacity: 0;
+  }
+}
+

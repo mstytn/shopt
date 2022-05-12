@@ -26,6 +26,12 @@
  * Error messages are in Turkish. Because it's a helper class for Turkish Web 
  * site (*fictional* shopping page called shopingo, for electronics).
  */
+
+class ShopError extends Error {
+  constructor(message) {
+    super(message)
+  }
+}
 class Shop {
   userCarts
   #settingsname
@@ -34,32 +40,68 @@ class Shop {
     this.#settingsname = 'shopingo'
     this.#guestname = 'random-guest'
     this.observers = []
+    this.errorObservers = []
     this.debugmode = debugmode
     const ls = localStorage.getItem(this.#settingsname)
     this.userCarts = {
-      lastLoggedInUser: 0, carts: [
+      lastLoggedInUser: 0, 
+      showInfo: true,
+      carts: [
         {user: this.#guestname, cart: []}
       ]}
     if (ls)
     {
       try {
-        const shop = JSON.parse(decodeURIComponent(atob(ls)))
+        if (!this.debugmode) {
+          const shop = JSON.parse(decodeURIComponent(atob(ls)))
+        }
         this.userCarts = (this.debugmode) ? JSON.parse(ls) : shop
       } catch (e) {
         localStorage.removeItem(this.#settingsname)
-        console.log('Kayıtlar tutarsız, tüm veriler silindi')
+        this.notifyErrorObservers(new ShopError('Kayıtlar tutarsız, tüm veriler silindi'))
       }
     }
     this.saveCart()
   }
 
-  addObserver(o) {
-    this.observers.push(o)
+
+  addObserver(/**/) {
+    const args = Array.prototype.slice.call(arguments)
+    for (let o of args)
+    {
+      if (o instanceof ElementObserver) {
+        this.observers.push(o)
+      }
+    }
+    return this
+  }
+
+  addErrorObserver(/**/) {
+    const args = Array.prototype.slice.call(arguments)
+    for (let o of args)
+    {
+      if (o instanceof ElementErrorObserver) {
+        this.errorObservers.push(o)
+      }
+    }
+    return this
   }
 
   notifyObservers() {
     for (let o of this.observers) {
       o.update(this.userCarts.carts[this.userCarts.lastLoggedInUser])
+    }
+  }
+
+  notifyErrorObservers(e) {
+    // && !(e instanceof ShopError)
+    if (this.debugmode)
+      console.error(e)
+    for (let o of this.errorObservers) {
+      if (!(e instanceof ShopError))
+        o.update(new ShopError(e.message))
+      else
+        o.update(e)
     }
   }
 
@@ -85,8 +127,10 @@ class Shop {
 
   removeFromCart(productId) {
     const theCart = this.getuserCart()
-    if (!theCart.includes(productId))
-      throw new Error('Ürün Bulunamadı')
+    if (!theCart.includes(productId)) {
+      this.notifyErrorObservers(new ShopError('Ürün Bulunamadı'))
+      return
+    }
     theCart.splice(theCart.indexOf(productId), 1)
     this.saveCart()
   }
@@ -99,8 +143,11 @@ class Shop {
   }
 
   moveUser(username) {
-    if (this.getCurrentUserName() !== this.#guestname)
-      throw new Error('Misafir olmayan kullanıcıyı taşıyamazsınız')
+    if (this.getCurrentUserName() !== this.#guestname) {
+      
+      this.notifyErrorObservers(new ShopError('Misafir olmayan kullanıcıyı taşıyamazsınız'))
+      return
+    }
     const cartToCopy = [...this.getuserCart()]
     this.userCarts.carts.push({user: username, cart: cartToCopy})
     this.empyCart(false)
@@ -110,8 +157,9 @@ class Shop {
 
   addUser(username) {
     const isUserExists = this.userCarts.carts.some(v => v.user === username)
-    if (isUserExists)
-      throw new Error('Kullanıcı adı zaten mevcut. Başka bir kullanıcı adı giriniz.')
+    if (isUserExists) {
+      this.notifyErrorObservers(new ShopError('Kullanıcı adı zaten mevcut. Başka bir kullanıcı adı giriniz.'))
+    }
     this.userCarts.carts.push({user: username, cart: []})
     this.userCarts.lastLoggedInUser = this.userCarts.carts.length - 1
     this.saveCart()
@@ -119,15 +167,19 @@ class Shop {
 
   changeUser(username) {
     const index = this.userCarts.carts.findIndex(v => v.user === username)
-    if (index === -1)
-      throw new Error('Kullanıcı Bulunamadı')
+    if (index === -1) {
+      this.notifyErrorObservers(new ShopError('Kullanıcı Bulunamadı'))
+      return
+    }
     this.userCarts.lastLoggedInUser = index
     this.saveCart()
   }
 
   deleteUser() {
-    if (this.userCarts.lastLoggedInUser === 0)
-      throw new Error('Misafir Kullanıcıyı Silemezsiniz')
+    if (this.userCarts.lastLoggedInUser === 0) {
+      this.notifyErrorObservers(new ShopError('Misafir Kullanıcıyı Silemezsiniz'))
+      return
+    }
     this.userCarts.carts.splice(this.getCurrentUserIndex(), 1)
     this.logoutUser()
   }
@@ -137,11 +189,19 @@ class Shop {
     this.saveCart()
   }
 
+  showDiscalimer(infoFunction) {
+    if (!infoFunction || this.userCarts.showInfo)
+      return
+    infoFunction()
+    this.userCarts.showInfo = false
+    this.saveCart(false)
+  }
+
   saveCart(observerNotification = true) {
     const updater = (this.debugmode) ? JSON.stringify(this.userCarts) : btoa(encodeURIComponent(JSON.stringify(this.userCarts)))
     localStorage.setItem(this.#settingsname, 
       updater
-    )
+      )
     if (observerNotification)
       this.notifyObservers()
   }
