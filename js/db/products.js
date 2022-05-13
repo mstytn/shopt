@@ -11,11 +11,12 @@ const products = [
 		color: ["siyah", "kırmızı"],
 		detailedlist: ["2m kablo uzunluğu", "Genişlik ayarı", "360 derece dönebilen earpad"],
 		price: 1295,
-		discount: 0,
+		discount: 30,
 		attributes: ["Mic", "RGB"],
 		images: ["GH-903.png"],
 		featured: false,
-		slider: false
+		slider: false,
+    featuredbg: "blue"
 	},
   {
 		id: "0768b4d2-bde7-42d3-9573-cbd96679f1a0",
@@ -32,7 +33,8 @@ const products = [
 		attributes: ["Bluetooth", "Mic", "RGB"],
 		images: ["WH-1000XM4.png"],
 		featured: false,
-		slider: false
+		slider: false,
+    featuredbg: "green"
 	},
 	{
 		id: "11eced26-c7d2-4053-a49e-45474b9c0e9d",
@@ -49,10 +51,11 @@ const products = [
 		attributes: ["Bluetooth", "Mic", "RGB"],
 		images: ["Rockerz-500.png"],
 		featured: false,
-		slider: false
+		slider: false,
+    featuredbg: "red"
 	},
 	{
-		id: "2687ccdf-58a6-4db1-8e67-ad73baa1cf62",
+		id: "2687ccdf-58a6-4db1-8f67-ad73baa1cf62",
 		category: "Kulaklıklar",
 		subcategory: "Kulak Üstü",
 		brand: "Octave",
@@ -66,6 +69,43 @@ const products = [
 		attributes: ["Mic", "RGB"],
 		images: ["octave-en-v1.png"],
 		featured: false,
-		slider: false
+		slider: false,
+    featuredbg: "orange"
+	},
+  {
+		id: "2687ccdf-58a6-4db1-8e67-ad73baa1cf62",
+		category: "Kulaklıklar",
+		subcategory: "Kulak Üstü",
+		brand: "Octave",
+		name: "Sloppy",
+		exp: "Gürültü Engelleme Özellikli Kablosuz Kulaklık",
+		details: "Bu kulaklık sayesinde oyunlarınızın içinde gibi hissedeceksiniz. Gürültü önleyici mikrofonu sayesinde etraftan gelen sesleri paylaşmak zorunda kalmayacaksınız.",
+		color: ["Yeşil", "Mavi", "Kırmızı"],
+		detailedlist: ["1.5m kablo", "Genişlik ayarı", "Ergonomik Tasarım"],
+		price: 2885,
+		discount: 0,
+		attributes: ["Mic", "RGB"],
+		images: ["octave-en-v1.png"],
+		featured: false,
+		slider: false,
+    featuredbg: "hotpink"
+	},
+  {
+		id: "2687ccdf-58a6-8e67-4db1-ad73baa1cf62",
+		category: "Kulaklıklar",
+		subcategory: "Kulak Üstü",
+		brand: "Octave",
+		name: "Ponny En V3",
+		exp: "Gürültü Engelleme Özellikli Kablosuz Kulaklık",
+		details: "Bu kulaklık sayesinde oyunlarınızın içinde gibi hissedeceksiniz. Gürültü önleyici mikrofonu sayesinde etraftan gelen sesleri paylaşmak zorunda kalmayacaksınız.",
+		color: ["Yeşil", "Mavi", "Kırmızı"],
+		detailedlist: ["1.5m kablo", "Genişlik ayarı", "Ergonomik Tasarım"],
+		price: 2885,
+		discount: 10,
+		attributes: ["Mic", "RGB"],
+		images: ["octave-en-v1.png"],
+		featured: false,
+		slider: false,
+    featuredbg: "gray"
 	},
 ]

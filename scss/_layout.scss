@@ -1,2 +1,97 @@
 @use 'base' as *;
 
+body {
+  background-color: var(--color-white);
+  font-family: 'Montserrat', sans-serif;
+  padding: 0 1vw;
+  margin: 0;
+}
+
+
+main {
+  max-width: 1200px;
+  margin: 85px auto;
+}
+
+header {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sign-modal {
+  opacity: 0;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  backdrop-filter: blur(15px) grayscale(90%) brightness(90%);
+  z-index: 99999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 300ms;
+  .signer {
+    background-color: var(--color-white);
+    width: 400px;
+    height: 50vh;
+    border-radius: $borderradius;
+    box-shadow: 0 0 25px var(--color-black-3);
+    text-align: center;
+    overflow: hidden;
+    h2 {
+      font-weight: 400;
+      text-align: left;
+      font-size: 2rem;
+      margin: 0;
+      color: var(--color-black-3)
+    }
+    img {
+      height: 3rem;
+      opacity: .8;
+    }
+    input {
+      font-family: inherit;
+      padding: .5rem 0;
+      margin-top: 1.5rem;
+      font-size: 1.3rem;
+      width: calc(100%);
+      border: none;
+      border-bottom: 1px solid var(--color-black-3);
+      outline: none;
+      background-color: transparent;
+    }
+    & p {
+      text-align: left;
+      font-size: .9rem;
+      margin-top: 2rem;
+      color: var(--color-black-5);
+    }
+    & .sign-in, .sign-up {
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 6rem - 3rem);
+      padding: 3rem;
+      transition: transform 500ms;
+    }
+    & .buttons {
+      margin-top: auto;
+      align-self: flex-end;
+    }
+    .sign-in {
+      transform: translateY(0);
+      transition: transform 500ms ease;
+    }
+    .sign-up {
+      transform: translateY(0);
+      transition: transform 500ms ease;
+    }
+
+    .transit-in {
+      transform: translateY(calc(-100% - 3rem)) !important;
+    }
+    .transit-up {
+      transform: translateY(-100%) !important;
+    }
+  }
+}

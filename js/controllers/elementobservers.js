@@ -1,11 +1,23 @@
 // jshint ignore: start
 class ElementObserver {
-  constructor() {
+  constructor(counterSelector, userSelector) {
+    if (counterSelector)
+      this.shopCount = document.querySelector(counterSelector)
+    if (userSelector)
+      this.userDisplay = document.querySelector(userSelector)
   }
 
   update(userCart) {
-    console.log(userCart.user)
-    console.log(userCart.cart)
+    if (this.shopCount) {
+      this.shopCount.innerText = userCart.cart.length
+      if (userCart.cart.length === 0) {
+        this.shopCount.classList.remove('show')
+      } else {
+        this.shopCount.classList.add('show')
+      }
+    }
+    if (this.userDisplay)
+      this.userDisplay.innerText = userCart.user
   }
 }
 
@@ -80,3 +92,62 @@ class ElementErrorObserver {
     })
   }
 }
+
+class MenuCartPreview {
+  constructor(cartlistQuery, cartButtonQuery, emptyCartButtonQuery, totalPriceQuery) {
+    this.cartList = document.querySelector(cartlistQuery)
+    this.totalPriceElement = document.querySelector(totalPriceQuery)
+    this.cartEmptierElement = document.querySelectorAll(emptyCartButtonQuery)
+    this.cartPreviewer = this.cartList.parentElement.parentElement
+    this.button = document.querySelectorAll(cartButtonQuery)
+    this.uniqueCart = []
+    this.#hookClik()
+  }
+
+  update() {
+    this.uniqueCart = shop.getUniqueCart()
+    if (this.uniqueCart.length === 0)
+      this.cartPreviewer.classList.add('hide')
+    else {
+      let total = 0;
+      this.cartPreviewer.classList.remove('hide')
+      this.cartList.innerHTML = ''
+      this.uniqueCart.forEach(item => {
+        // TODO
+        const e = products.find(p => p.id === item.id)
+        total += e.price * item.quantity
+        this.cartList.insertAdjacentHTML('afterbegin', this.#createListPreview(e, item.quantity))
+      })
+      this.totalPriceElement.innerText = `${total.toFixed(2)}₺`
+    }
+  }
+
+  #createListPreview(item, quantity) {
+    const {brand, name, images, price, discount} = item
+    return `<div class="cart-preview-list-item">
+      <img src="images/${images[0]}" alt="">
+      <div class="cart-preview-list-item__title">
+        <h4>${brand}</h4>
+        <p>${name}</p>
+      </div>
+      <p>x${quantity}</p>
+      <p>${((price - ((price / 100) * discount))*quantity).toFixed(2)}₺</p>
+    </div>`
+  }
+
+  #hookClik() {
+    this.button.forEach(cb => {
+      cb.addEventListener('click', () => {
+      if (this.uniqueCart.length === 0)
+        errorCatcher.update(new ShopError('Sepetinizde Ürün Bulunmuyor'))
+      })
+    })
+    console.log(this.cartEmptierElement)
+    this.cartEmptierElement.forEach(cb => {
+      cb.addEventListener('click', () => {
+        shop.emptyCart()
+      })
+    })
+  }
+}
+

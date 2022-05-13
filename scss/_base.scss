@@ -12,6 +12,9 @@ $masterColors: (
   "pink": #c78bda
 );
 
+$borderradius: 1rem;
+$borderradius-sm: 0.5rem;
+
 :root {
   @each $name, $color in $transparentColors {
     --color-#{$name}: #{$color};
@@ -22,9 +25,45 @@ $masterColors: (
   @each $name, $color in $masterColors {
     --color-#{$name}: #{$color};
   }
+  scroll-behavior: smooth;
 }
 
-body {
-  background-color: var(--color-white);
-  font-family: 'Montserrat', sans-serif;
+
+
+@keyframes sine-slider {
+  from {
+    transform: translateY(-50%) scale(1);
+  }
+  to {
+    transform: translateY(-50%) scale(.9);
+  }
+}
+
+.btn {
+  padding: .5rem 2rem;
+  font-family: inherit;
+  font-weight: 500;
+  color: white;
+  border-radius: 150px;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+  &:hover {
+    opacity: .9;
+  }
+}
+
+.btn-cart {
+  background-color: red;
+}
+
+.btn-ok {
+  background-color: green;
+}
+.btn-cancel {
+  background-color: gray;
+}
+
+.empty-cart-button {
+  padding: .4rem .5rem;
 }

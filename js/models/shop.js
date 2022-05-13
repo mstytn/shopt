@@ -43,35 +43,44 @@ class Shop {
     this.errorObservers = []
     this.debugmode = debugmode
     const ls = localStorage.getItem(this.#settingsname)
-    this.userCarts = {
+
+    const dummyCart = {
       lastLoggedInUser: 0, 
       showInfo: true,
       carts: [
         {user: this.#guestname, cart: []}
-      ]}
+      ]
+    }
     if (ls)
     {
-      try {
         if (!this.debugmode) {
-          const shop = JSON.parse(decodeURIComponent(atob(ls)))
+          try {
+            this.userCarts = {...JSON.parse(decodeURIComponent(atob(ls)))}
+          } catch (e) {
+            localStorage.removeItem(this.#settingsname)
+            this.notifyErrorObservers(new ShopError('Kayıtlar tutarsız, tüm veriler silindi'))
+            this.userCarts = {...dummyCart}
+          }
+        } else {
+          try {
+            this.userCarts = {...JSON.parse(ls)}
+          } catch (e) {
+            localStorage.removeItem(this.#settingsname)
+            this.notifyErrorObservers(new ShopError('Kayıtlar tutarsız, tüm veriler silindi'))
+            this.userCarts = {...dummyCart}
+          }
         }
-        this.userCarts = (this.debugmode) ? JSON.parse(ls) : shop
-      } catch (e) {
-        localStorage.removeItem(this.#settingsname)
-        this.notifyErrorObservers(new ShopError('Kayıtlar tutarsız, tüm veriler silindi'))
-      }
+    } else {
+      this.userCarts = {...dummyCart}
     }
     this.saveCart()
   }
-
 
   addObserver(/**/) {
     const args = Array.prototype.slice.call(arguments)
     for (let o of args)
     {
-      if (o instanceof ElementObserver) {
-        this.observers.push(o)
-      }
+      this.observers.push(o)
     }
     return this
   }
@@ -135,7 +144,7 @@ class Shop {
     this.saveCart()
   }
 
-  empyCart(saveChart = true) {
+  emptyCart(saveChart = true) {
     const theCart = this.getuserCart()
     theCart.splice(0, theCart.length)
     if (saveChart)
@@ -197,13 +206,27 @@ class Shop {
     this.saveCart(false)
   }
 
+  getUniqueCart() {
+    const cart = this.getuserCart()
+    const uniqueCart = []
+    if (cart.length > 0) {
+      const set = Array.from(new Set(cart))
+      set.forEach(item => {
+        const count = cart.filter(i => i === item).length
+        uniqueCart.push({id: item, quantity: count})
+      })
+    }
+    return uniqueCart
+  }
+
   saveCart(observerNotification = true) {
     const updater = (this.debugmode) ? JSON.stringify(this.userCarts) : btoa(encodeURIComponent(JSON.stringify(this.userCarts)))
     localStorage.setItem(this.#settingsname, 
       updater
       )
-    if (observerNotification)
-      this.notifyObservers()
+    if (observerNotification) {
+      setTimeout(() => {this.notifyObservers()}, 50) 
+    }
   }
 }
 
