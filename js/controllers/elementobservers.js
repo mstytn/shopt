@@ -149,7 +149,7 @@ class MenuCartPreview {
         <p>${name}</p>
       </div>
       <p>x${quantity}</p>
-      <p>${((price - ((price / 100) * discount))*quantity).toFixed(2)}₺</p>
+      <p>${((price - ((price / 100) * discount))).toFixed(2)}₺</p>
     </div>`
   }
 
