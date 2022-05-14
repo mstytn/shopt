@@ -43,7 +43,6 @@ class Slider {
     parent.addEventListener('click', e => {
       e.stopPropagation()
       const gatheredId = e.target.getAttribute('data-id')
-      // TODO
       if (gatheredId)
         openDetails(gatheredId)
     })
@@ -129,7 +128,6 @@ class Featured {
       } else {
         id = e.target.getAttribute('data-id')
       }
-      //TODO 
       openDetails(id)
     })
   }
@@ -150,23 +148,28 @@ class ProductList {
   #hookClick(openDetails) {
     this.productList.addEventListener('click', e => {
       e.stopPropagation()
-      // alert(e.target.getAttribute('data-id'))
-      // console.dir()
       const id = e.target.getAttribute('data-id')
       if (id) {
         if (e.target.tagName === 'BUTTON') {
           shop.addToCart(id)
+          errorCatcher.update({message: 'Ürün Sepetie Eklendi'}, 'info')
         } else {
           openDetails(id)
         }
       } else {
         let parent = e.target
         let id
-        while (!id) {
+        while (id === undefined) {
           parent = parent.parentElement
-          id = parent.getAttribute('data-id')
+          try {
+            id = parent.getAttribute('data-id') 
+          }
+          catch (e) {
+              id = false
+          }
         }
-        openDetails(id)
+        if (id)
+          openDetails(id)
       }
     })
   }
@@ -205,11 +208,186 @@ class ProductList {
   }
 }
 
+class DetailsModal {
+  constructor() {
+    this.modalCloseButton = document.querySelector('#detailsModal .close-btn')
+    this.detailPageElement = document.querySelector('#detailsModal .product-details')
+    this.modal = document.querySelector('#detailsModal')
+    this.addToCartButton = document.querySelector('#detailsModal button.btn')
+    this.productId = undefined
+    this.modalVisible = false
+    this.tabDisable = false
+    this.#hook()
+  }
+
+  tabDisabler = (event) => {
+    if (event.key === 'Tab')
+      event.preventDefault()
+    if (event.key === 'Escape')
+      this.hideModal()
+  }
+
+  enableInteractions() {
+    window.removeEventListener('keyup', this.tabDisabler)
+    window.removeEventListener('keydown', this.tabDisabler)
+    document.removeEventListener('scroll', this.tabDisabler)
+    document.querySelector('body').style.overflow = 'auto'
+  }
+  disableInteractions() {
+    window.addEventListener('keyup', this.tabDisabler)
+    window.addEventListener('keydown', this.tabDisabler)
+    document.addEventListener('scroll', this.tabDisabler)
+    document.querySelector('body').style.overflow = 'hidden'
+  }
+
+  showModal(productId) {
+    if (!productId)
+      return
+    this.productId = productId
+    if (this.modalVisible)
+      return
+    this.#feedView()
+    setTimeout(() => {
+      this.modal.style.opacity = 1
+      this.detailPageElement.classList.add('visible')
+    }, 50)
+    this.modal.style.display = 'flex'
+    this.modalVisible = true
+    this.detailPageElement.addEventListener('click', this.#imageClicks)
+    this.addToCartButton.addEventListener('click', this.#addToCart)
+    this.disableInteractions()
+  }
+
+  hideModal() {
+    this.productId = undefined
+    this.detailPageElement.classList.remove('visible')
+    this.modal.style.opacity = 0
+    this.modalVisible = false
+    setTimeout(() => {
+      this.modal.style.display = 'none'
+    }, 300)
+    document.querySelectorAll('#detailsModal .discount-badge').forEach(d => {
+      d.remove()
+    })
+    document.querySelectorAll('#detailsModal .product-details__imagebox-selector').forEach(d => {
+      d.remove()
+    })
+    document.querySelector('#detailsModal .product-details__details__text').innerHTML = ''
+    this.detailPageElement.removeEventListener('click', this.#imageClicks)
+    this.addToCartButton.removeEventListener('click', this.#addToCart)
+    this.enableInteractions()
+  }
+
+  #hook() {
+    this.modal.addEventListener('click', e => {
+      e.stopPropagation()
+      if (e.target.id === 'detailsModal')
+        this.hideModal()
+    })
+    this.modalCloseButton.addEventListener('click', () => {this.hideModal()})
+  }
+
+  #imageClicks(event) {
+    event.stopPropagation()
+    if (event.target.id === 'detailsPageAddToCart') 
+      return
+    if(event.target.getAttribute('data-type') && event.target.getAttribute('data-type') !== 'image-selector' )
+      return
+    
+    const baseImage = document.querySelector('#detailsModal .product-details__imagebox > img:nth-of-type(1)')
+    const imageSelectors = document.querySelectorAll('#detailsModal .image-selector')
+    try {
+      const clickType = event.target.getAttribute('data-type')
+      if (clickType === 'image-selector')
+      {
+        imageSelectors.forEach(element => element.classList.remove('active'))
+        event.target.classList.add('active')
+        baseImage.src = event.target.src
+      }
+    } catch (e) {
+      return
+    }
+  }
+
+  #addToCart = (e) => {
+    if (this.productId)
+    {
+      shop.addToCart(this.productId)
+      errorCatcher.update({message: 'Ürün Sepetie Eklendi'}, 'info')
+      this.hideModal()
+    }
+    else {
+      errorCatcher.update(new ShopError())
+    }
+
+  }
+
+  #feedView() {
+    if (!this.productId)
+      return undefined
+    const theProduct = productor.findProductById(this.productId)
+    if (!theProduct.success)
+      return undefined
+    const {category, subcategory, brand, name, exp, details, color, detailedlist, price, discount, images} = theProduct.result
+    
+    const bread = document.querySelector('.product-details__breadcrumbs > p')
+    bread.innerHTML = `SHOPT &gt; ${category}`
+
+    const baseImage = document.querySelector('#detailsModal .product-details__imagebox > img:nth-of-type(1)')
+    baseImage.src = `images/${images[0]}`
+
+    let imageSelectors = '<div class="product-details__imagebox-selector">'
+    imageSelectors += `<img class="image-selector active" src="images/${images[0]}" alt="" data-type="image-selector">`
+    images.forEach((p, i) => {
+      if (i > 0)
+        imageSelectors += `<img class="image-selector" src="images/${p}" alt="" data-type="image-selector">`
+    })
+    imageSelectors += '</div>'
+    if (images.length > 1)
+      baseImage.insertAdjacentHTML('afterend', imageSelectors)
+    const colorThemes = document.querySelector('#detailsModal .color-theme')
+    colorThemes.innerHTML = ''
+    color.forEach(c => colorThemes.innerHTML += `<div class="color" style="background-color: ${c}"></div>`)
+
+    const oPrice = document.querySelector('#detailsModal .original-price')
+    const dPrice = document.querySelector('#detailsModal .price-with-discount')
+    if (discount > 0)
+      oPrice.innerText = price.toFixed(2) + '₺'
+    dPrice.innerText = (price - ((price/100)*discount)).toFixed(2) + '₺'
+
+    const detailed = document.querySelector('#detailsModal .product-details__details__text')
+
+    let detailedProd = `
+      <h2>${brand}</h2>
+      <h3>${name}</h3>
+      <h4>${subcategory}</h4>
+      <p>${details}</p>
+      <h5>Özellikler</h5>
+      <ul>
+    `
+    detailedlist.forEach(d => {
+      detailedProd += `<li>${d}</li>`
+    })
+    detailedProd += `</ul>`
+
+    detailed.insertAdjacentHTML('afterbegin', detailedProd)
+
+    const discountBadge = (discount > 0) ? `
+    <div class="discount-badge">
+      %${discount}&darr;
+      <span>indirim</span>
+    </div>`: ''
+    this.detailPageElement.insertAdjacentHTML('afterbegin', discountBadge)
+  }
+}
+
 class SigForms {
   constructor() {
     this.signinpage = document.querySelector('div.sign-in')
     this.signuppage = document.querySelector('div.sign-up')
     this.gotoSigninLink = document.querySelector('#gotosignin')
+    this.signInInput = document.querySelector('div.sign-in input')
+    this.signUpInput = document.querySelector('div.sign-up input')
     this.gotoSignupLink = document.querySelector('#gotosignup')
     this.signInButton = document.querySelector('#signin')
     this.signUpButton = document.querySelector('#signup')
@@ -221,37 +399,62 @@ class SigForms {
   }
 
   showSignIn() {
-    console.log('signin')
+    this.signinpage.classList.remove('transit-in')
+    this.signuppage.classList.remove('transit-up')
   }
 
   showSignUp() {
-    console.log('signup')
+    this.signinpage.classList.add('transit-in')
+    this.signuppage.classList.add('transit-up')
   }
 
   #hook() {
     this.gotoSigninLink.addEventListener('click', e => {
       e.preventDefault()
-      this.signinpage.classList.remove('transit-in')
-      this.signuppage.classList.remove('transit-up')
+      this.showSignIn()
+      this.#clearInputs()
     })
     this.gotoSignupLink.addEventListener('click', e => {
       e.preventDefault()
-      this.signinpage.classList.add('transit-in')
-      this.signuppage.classList.add('transit-up')
+      this.showSignUp()
+      this.#clearInputs()
     })
     this.signInButton.addEventListener('click', e => {
-      alert('sining in')
+        const result = currentUser.switchUser(this.signInInput.value)
+        if (!result.success)
+          if (result.code != -2)
+            errorCatcher.update(new ShopError(result.message))
+          else {
+            errorCatcher.update(new ShopError(result.message))
+            this.showSignUp()
+          }
+        else {
+          const res = shop.changeUser(result.message)
+          errorCatcher.update({message: 'sayın ' + result.message + ' hesabınıza giriş yaptınız.'}, 'info')
+          if (res)
+            this.hideModal()
+        }
     })
+    
     this.signUpButton.addEventListener('click', e => {
-      alert('sining up')
-    })
+      const inputVal = this.signUpInput.value
+      const result = currentUser.createUser(inputVal)
+      if (!result.success)
+        if (result.code != -2)
+          errorCatcher.update(new ShopError(result.message))
+        else 
+          errorCatcher.update(new ShopError(result.message), 'warning')
+      else {
+        this.hideModal()
+        errorCatcher.update({message: 'sayın ' + result.message + 'hesabınız oluşturuldu ve giriş yapıldı'}, 'info')
+      }
+  })
     this.modalCloseButtons.forEach(b => {
       b.addEventListener('click', e => {
         this.hideModal()
       })
     })
     this.modal.addEventListener('click', e => {
-      console.log()
       e.stopPropagation()
       if (e.target.id === 'signModal')
         this.hideModal()
@@ -267,6 +470,7 @@ class SigForms {
       this.modalVisible = true
       window.addEventListener('keyup', this.disableTab)
       window.addEventListener('keydown', this.disableTab)
+      document.querySelector('body').style.overflow = 'hidden'
     }
   }
 
@@ -286,6 +490,45 @@ class SigForms {
       this.modalVisible = false
       window.removeEventListener('keyup', this.disableTab)
       window.removeEventListener('keydown', this.disableTab)
+      document.removeEventListener('scroll', this.disableScroll)
+      document.querySelector('body').style.overflow = 'auto'
     }
+    this.#clearInputs()
+  }
+
+  #clearInputs() {
+    this.signInInput.value = ''
+    this.signUpInput.value = ''
+  }
+}
+
+
+class UsersNav {
+  constructor(usersNavButtonQuery) {
+    this.usersNavButton = document.querySelector(usersNavButtonQuery)
+    this.#hook()
+  }
+
+  #hook() {
+    this.usersNavButton.addEventListener('click', e => {
+      e.preventDefault()
+      if (currentUser.isUserAnonymous()) {
+        sign.showSignIn()
+        sign.showModal()
+      } else {
+        shop.logoutUser()
+        errorCatcher.update({message: 'Çıkış Yapıldı'}, 'info')
+      }
+    })
+  }
+
+  updateButton(cart) {
+    if (currentUser.isUserAnonymous())
+      this.usersNavButton.innerHTML = 'üye ol / giriş yap'
+    else
+      this.usersNavButton.innerHTML = `Merhaba ${shop.getCurrentUserName()} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+      <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+    </svg>`
   }
 }

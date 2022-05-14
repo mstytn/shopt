@@ -155,42 +155,54 @@ class Shop {
     if (this.getCurrentUserName() !== this.#guestname) {
       
       this.notifyErrorObservers(new ShopError('Misafir olmayan kullanıcıyı taşıyamazsınız'))
-      return
+      return false
     }
     const cartToCopy = [...this.getuserCart()]
     this.userCarts.carts.push({user: username, cart: cartToCopy})
-    this.empyCart(false)
+    this.emptyCart(false)
     this.userCarts.lastLoggedInUser = this.userCarts.carts.length - 1
     this.saveCart()
+    return true
   }
 
   addUser(username) {
-    const isUserExists = this.userCarts.carts.some(v => v.user === username)
-    if (isUserExists) {
+    if (this.isUserExists()) {
       this.notifyErrorObservers(new ShopError('Kullanıcı adı zaten mevcut. Başka bir kullanıcı adı giriniz.'))
+      return false
     }
     this.userCarts.carts.push({user: username, cart: []})
     this.userCarts.lastLoggedInUser = this.userCarts.carts.length - 1
     this.saveCart()
+    return true
+  }
+
+  isUserExists(username) {
+    return this.userCarts.carts.some(v => v.user === username)
+  }
+
+  findUserIndex(username) {
+    return this.userCarts.carts.findIndex(v => v.user === username)
   }
 
   changeUser(username) {
     const index = this.userCarts.carts.findIndex(v => v.user === username)
     if (index === -1) {
       this.notifyErrorObservers(new ShopError('Kullanıcı Bulunamadı'))
-      return
+      return false
     }
     this.userCarts.lastLoggedInUser = index
     this.saveCart()
+    return true
   }
 
   deleteUser() {
     if (this.userCarts.lastLoggedInUser === 0) {
       this.notifyErrorObservers(new ShopError('Misafir Kullanıcıyı Silemezsiniz'))
-      return
+      return false
     }
     this.userCarts.carts.splice(this.getCurrentUserIndex(), 1)
     this.logoutUser()
+    return true
   }
 
   logoutUser() {

@@ -29,6 +29,26 @@ $borderradius-sm: 0.5rem;
 }
 
 
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f155;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #55555522;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #55555577;
+}
+
 
 @keyframes sine-slider {
   from {
@@ -47,9 +67,14 @@ $borderradius-sm: 0.5rem;
   border-radius: 150px;
   font-size: 1.1rem;
   border: none;
+  box-shadow: 0 2px 5px transparent;
+  transition: color 300ms, transform 300ms, opacity 300ms, box-shadow 300ms;
+  transform: translateY(0);
   cursor: pointer;
   &:hover {
     opacity: .9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 3px var(--color-black-5);
   }
 }
 
@@ -67,3 +92,4 @@ $borderradius-sm: 0.5rem;
 .empty-cart-button {
   padding: .4rem .5rem;
 }
+

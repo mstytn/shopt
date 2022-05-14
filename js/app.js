@@ -1,4 +1,5 @@
 // jshint ignore: start
+const productor = new Producs(products)
 const cartCounter = new ElementObserver('.menu-cart-button > span')
 const errorCatcher = new ElementErrorObserver('.toaster', 'SHOPT')
 const menuCartPreview = new MenuCartPreview(
@@ -7,13 +8,22 @@ const menuCartPreview = new MenuCartPreview(
   '.emptycard',
   '.cart-preview__summary p')
 const slider = new Slider('.sliders', 10000, showDetails)
-slider.feedSlider(products)
+const sliderProducts = productor.filterSliderProducts()
+if (sliderProducts.success)
+  slider.feedSlider(sliderProducts.result)
 
 const pList = new ProductList('.product-list', showDetails)
 pList.addToList(products)
 
 const featured = new Featured('.featured', showDetails)
-featured.feedFeatured(products)
+const featuredProducts = productor.filterFeatured()
+if (featuredProducts.success)
+  featured.feedFeatured(featuredProducts.result)
+
+const currentUser = new CurrentUser('random-guest')
+
+const userNav = new UsersNav('#user')
+
 
 const shop = new Shop(debugmode = false)
   
@@ -23,9 +33,10 @@ shop.addObserver(cartCounter, menuCartPreview)
 
 const sign = new SigForms()
 
-
+const detailsModal = new DetailsModal()
 
 // TEMPORARY:
 function showDetails(id) {
-  console.log(id, 'sayfası açılıyor...')
+  detailsModal.showModal(id)
 }
+
