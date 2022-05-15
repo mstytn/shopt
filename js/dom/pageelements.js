@@ -210,9 +210,9 @@ class ProductList {
 
 class DetailsModal {
   constructor() {
+    this.modal = document.querySelector('#detailsModal')
     this.modalCloseButton = document.querySelector('#detailsModal .close-btn')
     this.detailPageElement = document.querySelector('#detailsModal .product-details')
-    this.modal = document.querySelector('#detailsModal')
     this.addToCartButton = document.querySelector('#detailsModal button.btn')
     this.productId = undefined
     this.modalVisible = false
@@ -381,6 +381,160 @@ class DetailsModal {
   }
 }
 
+class CartSummary {
+  constructor() {
+    this.modal = document.querySelector('#cartModal')
+    this.modalCloseButton = document.querySelector('#cartModal .close-btn')
+    this.cartPageElement = document.querySelector('#cartModal .cart')
+    this.removeFromCartButtons = document.querySelectorAll('.remove-product')
+    this.cLister = document.querySelector('#cLister')
+    this.modalVisible = false
+    this.#hook()
+  }
+
+  tabDisabler = (event) => {
+    if (event.key === 'Tab')
+      event.preventDefault()
+    if (event.key === 'Escape')
+      this.hideModal()
+  }
+
+  enableInteractions() {
+    window.removeEventListener('keyup', this.tabDisabler)
+    window.removeEventListener('keydown', this.tabDisabler)
+    document.removeEventListener('scroll', this.tabDisabler)
+    document.querySelector('body').style.overflow = 'auto'
+  }
+  disableInteractions() {
+    window.addEventListener('keyup', this.tabDisabler)
+    window.addEventListener('keydown', this.tabDisabler)
+    document.addEventListener('scroll', this.tabDisabler)
+    document.querySelector('body').style.overflow = 'hidden'
+  }
+
+  showModal() {
+    if (this.modalVisible)
+      return
+    setTimeout(() => {
+      this.modal.style.opacity = 1
+      this.cartPageElement.classList.add('visible')
+      this.modalVisible = true
+    }, 50)
+    this.modal.style.display = 'flex'
+    this.modalVisible = true
+    this.disableInteractions()
+    this.cLister.addEventListener('click', this.#removeProduct)
+  }
+  #removeProduct = (e) => {
+    if (e.target.tagName !== 'BUTTON')
+      return
+    const itemId = e.target.getAttribute('data-id')
+    if (itemId) {
+      const res = shop.removeFromCart(itemId)
+      if (!res)
+        errorCatcher.update(new ShopError())
+      else
+        errorCatcher.update(new ShopError('Ürün Sepetinizden Silindi'), 'info')
+    }
+  }
+
+  hideModal() {
+    if (!this.modalVisible)
+      return
+    this.cartPageElement.classList.remove('visible')
+    this.modal.style.opacity = 0
+    this.modalVisible = false
+    setTimeout(() => {
+      this.modal.style.display = 'none'
+      this.modalVisible = false
+    }, 300)
+    this.enableInteractions()
+  }
+
+  #hook() {
+    this.modal.addEventListener('click', e => {
+      e.stopPropagation()
+      if (e.target.id === 'cartModal')
+        this.hideModal()
+    })
+    this.modalCloseButton.addEventListener('click', () => {this.hideModal()})
+  }
+
+  updateCartList(uniqueCartList) {
+    const lister = document.querySelector('#cLister')
+    lister.innerHTML = ''
+    const cartCount = document.querySelector('#cartModal p.cart__pricer__info > span')
+    const cartPrice = document.querySelector('#cartModal p.cart__pricer__price > strong')
+    const cartDiscount = document.querySelector('#cartModal p.cart__pricer__discount > strong')
+    const cartTotal = document.querySelector('#cartModal p.cart__pricer__total > strong')
+    lister.insertAdjacentHTML('afterbegin', this.#getLiterItems(uniqueCartList))
+    const {price, discount, total, count } = this.#getCartTotals(uniqueCartList)
+    cartCount.innerText = count
+    cartPrice.innerText = price.toFixed(2) +  '₺'
+    cartDiscount.innerText = '-' + discount.toFixed(2) + '₺'
+    cartTotal.innerText = total.toFixed(2) + '₺'
+  }
+
+  #getCartTotals(uniqueCartList) {
+    const cartObj = {
+      price: 0,
+      discount: 0,
+      total: 0,
+      count: 0
+    }
+    for (let item of uniqueCartList) {
+      const p = productor.findProductById(item.id)
+      if (p.success) {
+        cartObj.count += item.quantity
+        cartObj.price += p.result.price * item.quantity
+        cartObj.discount += ((p.result.price / 100) * p.result.discount)
+      }
+      
+    }
+    cartObj.total = cartObj.price - cartObj.discount 
+    return cartObj
+  }
+
+  #getLiterItems(uniqueCartList) {
+    let items = ''
+    for (let item of uniqueCartList) {
+      const p = productor.findProductById(item.id)
+      if (p.success) {
+        const i = p.result
+        const discounter = (i.discount > 0) ? `<span><strong>%${i.discount} &darr;</strong></span>`: ''
+        items += `
+        <div class="cart__lister__product">
+          <div class="cart__lister__product-info">
+            <img src="images/${i.images[0]}" alt="">
+            <div class="cart__lister__product__text">
+              <p>${i.brand}</p>
+              <p>${i.name}</p>
+            </div>
+          </div>
+          <div class="cart__lister__product-price">
+
+            <div class="cart__lister__product__price">${discounter} ${i.price.toFixed(2)}₺
+            </div>
+            <div class="cart__lister__product__count">
+            x${item.quantity}
+            </div>
+            <div class="class__lister__product__remove">
+              <button class="remove-product" data-id="${i.id}" title="Bu üründen 1 adet sepetten kaldır">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bag-dash" viewbox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M5.5 10a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5z"/>
+                  <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        `
+      }
+    }
+    return items
+  }
+}
+
 class SigForms {
   constructor() {
     this.signinpage = document.querySelector('div.sign-in')
@@ -516,19 +670,24 @@ class UsersNav {
         sign.showSignIn()
         sign.showModal()
       } else {
+        errorCatcher.update({message: `${shop.getCurrentUserName()} Oturumundan Çıkış Yapıldı`}, 'info')
         shop.logoutUser()
-        errorCatcher.update({message: 'Çıkış Yapıldı'}, 'info')
       }
     })
   }
 
   updateButton(cart) {
-    if (currentUser.isUserAnonymous())
+    if (currentUser.isUserAnonymous()) {
       this.usersNavButton.innerHTML = 'üye ol / giriş yap'
+      this.usersNavButton.title = 'Giriş yap ya da Üye Ol'
+    }
     else
+    {
       this.usersNavButton.innerHTML = `Merhaba ${shop.getCurrentUserName()} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
       <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
       <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-    </svg>`
+      </svg>`
+      this.usersNavButton.title = "Çıkış Yap"
+    }
   }
 }

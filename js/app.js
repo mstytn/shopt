@@ -13,7 +13,7 @@ if (sliderProducts.success)
   slider.feedSlider(sliderProducts.result)
 
 const pList = new ProductList('.product-list', showDetails)
-pList.addToList(products)
+pList.addToList(products.reverse())
 
 const featured = new Featured('.featured', showDetails)
 const featuredProducts = productor.filterFeatured()
@@ -34,6 +34,7 @@ shop.addObserver(cartCounter, menuCartPreview)
 const sign = new SigForms()
 
 const detailsModal = new DetailsModal()
+const cartModal = new CartSummary()
 
 // TEMPORARY:
 function showDetails(id) {

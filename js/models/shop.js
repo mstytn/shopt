@@ -138,10 +138,11 @@ class Shop {
     const theCart = this.getuserCart()
     if (!theCart.includes(productId)) {
       this.notifyErrorObservers(new ShopError('Ürün Bulunamadı'))
-      return
+      return false
     }
     theCart.splice(theCart.indexOf(productId), 1)
     this.saveCart()
+    return true
   }
 
   emptyCart(saveChart = true) {

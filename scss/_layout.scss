@@ -19,7 +19,7 @@ header {
 }
 
 @supports not (backdrop-filter: blur(15px) grayscale(90%) brightness(90%)) {
-  .sign-modal, .details-modal {
+  .sign-modal, .details-modal, .cart-modal {
     background-color: var(--color-black-9);
   }
 }
@@ -220,7 +220,13 @@ a, a:visited, a:hover, a:active {
       width: 50vw;
       max-width: 500px;
       min-width: 300px;
+      & > img:first-of-type {
+        padding: 1rem;
+        box-sizing: border-box;
+
+      }
       & > img {
+        margin: .5rem;
         width: 100%;
         border-radius: $borderradius;
         border: 1px solid var(--color-black-3);
@@ -231,10 +237,12 @@ a, a:visited, a:hover, a:active {
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 1rem;
+        gap: .5rem;
         width: 100%;
         & .image-selector {
-          width: 30%;
+          aspect-ratio: 1 / 1;
+          object-fit: scale-down;
+          width: 18%;
           border: 1px solid var(--color-black-3);
           border-radius: $borderradius;
           transform: translateY(0);
@@ -268,6 +276,50 @@ a, a:visited, a:hover, a:active {
   }
 
 }
+
+@media screen and (max-width: 890px) {
+  .details-modal {
+    .product-details {
+      & .discount-badge {
+        transform: scale(.7);
+        left: 3rem;
+
+      }
+      &__details {
+        flex-direction: column;
+        position: relative;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      &__imagebox {
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
+        & > img:nth-of-type(1) {
+          height: 20vh;
+          width: 20vh;
+          aspect-ratio: 1 / 1;
+          object-fit: cover;
+        }
+      }
+      &__imagebox-selector {
+        width: 250px;
+      }
+      .color-theme {
+        display: none;
+      }
+    }
+    
+  }
+}
+
+
 
 .cart-modal {
   opacity: 1;
@@ -337,6 +389,7 @@ a, a:visited, a:hover, a:active {
         justify-content: flex-end;
         align-items: flex-end;
         gap: 2rem;
+        margin-bottom: .3rem;
         & span {
           display: block;
           margin-bottom: 1px;
@@ -344,6 +397,9 @@ a, a:visited, a:hover, a:active {
           font-size: 1rem;
           color: black;
         }
+        & strong {
+          font-weight: 400;
+        };
       }
       &__info {
         display: block;
@@ -396,6 +452,14 @@ a, a:visited, a:hover, a:active {
           outline: none;
           border: none;
           color: red;
+          transition: color 300ms;
+          cursor: pointer;
+          &:hover {
+            color: gray;
+          }
+          & > svg {
+            pointer-events: none;
+          }
         }
       }
     }

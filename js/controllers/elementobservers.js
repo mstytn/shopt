@@ -17,6 +17,7 @@ class ElementObserver {
       }
     }
     userNav.updateButton(userCart)
+    cartModal.updateCartList(shop.getUniqueCart())
   }
 }
 
@@ -156,8 +157,11 @@ class MenuCartPreview {
   #hookClik() {
     this.button.forEach(cb => {
       cb.addEventListener('click', () => {
-      if (this.uniqueCart.length === 0)
-        errorCatcher.update(new ShopError('Sepetinizde Ürün Bulunmuyor'))
+        if (this.uniqueCart.length === 0)
+          errorCatcher.update(new ShopError('Sepetinizde Ürün Bulunmuyor'))
+        else {
+          cartModal.showModal()
+        }
       })
     })
     this.cartEmptierElement.forEach(cb => {

@@ -89,6 +89,12 @@ nav {
     width: 150px;
   }
 }
+
+@media screen and (max-width: 720px) {
+  nav .left-nav ul li:not(:nth-of-type(1)) {
+    display: none;
+  }
+}
 .menu-cart {
   position: relative;
   .menu-cart-button {
@@ -493,6 +499,7 @@ nav {
       border-radius: $borderradius;
       padding: 1rem;
       overflow: hidden;
+      aspect-ratio: 1 / 1;
       cursor: pointer;
       .discount-badge {
         position: absolute;
