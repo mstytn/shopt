@@ -207,9 +207,10 @@ class ProductList {
     `
   }
 
-  update(o) {
+  update(o, scroll = true ) {
     this.addToList(o.activePageObjects)
-    gsap.to(window, {duration: .2, scrollTo:"#urunler", ease: "power2"});
+    if (scroll)
+      gsap.to(window, {duration: .2, scrollTo:"#urunler", ease: "power2"});
   }
 }
 

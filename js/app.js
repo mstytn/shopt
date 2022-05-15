@@ -28,7 +28,7 @@ const listPaginator = new ListPaginator(pageList)
 // Sayfa değişimlerini tetikleyen Gözlemci Bağlanıtları
 pageList.addOberver(listPaginator).addOberver(productLister)
 // İlk çalışmada tetiklenmeyeceğinden, Ürünleri DOM'a listeye eklediğimiz sınıf
-productLister.update(pageList)
+productLister.update(pageList, false)
 // Öne Çıkan Ürünler Kısmının içini dolduran sınıf
 const featured = new Featured('.featured', showDetails)
 const featuredProducts = productor.filterFeatured()
