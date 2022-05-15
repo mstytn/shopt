@@ -1,5 +1,5 @@
 // jshint ignore: start
-const ppp = 6
+const ppp = 12
 // produtcs : DB : js/db/products
 // productor: Veri tabanı kontrol katmanı
 const productor = new Producs([...products].reverse())

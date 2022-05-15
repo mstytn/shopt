@@ -209,6 +209,7 @@ class ProductList {
 
   update(o) {
     this.addToList(o.activePageObjects)
+    gsap.to(window, {duration: .2, scrollTo:"#urunler", ease: "power2"});
   }
 }
 

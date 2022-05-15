@@ -220,6 +220,7 @@ a, a:visited, a:hover, a:active {
       width: 50vw;
       max-width: 500px;
       min-width: 300px;
+      max-width: 35vh;
       & > img:first-of-type {
         padding: 1rem;
         box-sizing: border-box;
@@ -228,6 +229,8 @@ a, a:visited, a:hover, a:active {
       & > img {
         margin: .5rem;
         width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: scale-down;
         border-radius: $borderradius;
         border: 1px solid var(--color-black-3);
         margin-bottom: 1rem;
