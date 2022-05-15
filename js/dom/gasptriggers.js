@@ -14,19 +14,6 @@ gsap.from(".featured__card", {
   ease: "ease"
 });
 
-gsap.from(".product", {
-  scrollTrigger: {
-    trigger: ".products",
-    toggleActions: "restart reverse reverse reverse",
-    start: "top center",
-  },
-  opacity: 0,
-  translateY: '100px', 
-  duration: 1,
-  stagger: 0.1, 
-  ease: "ease"
-});
-
 ScrollTrigger.create({
   trigger: "#urunler",
   start: "top top-=150",
@@ -67,3 +54,5 @@ function menuActivator(menutoactivate) {
   const theMenu = document.querySelector(selector)
   theMenu.classList.add('active')
 }
+
+// BUG: Menü Tetiklenmiyor > Sayfa Yüksekliği fazla olduğunda 

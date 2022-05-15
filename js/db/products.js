@@ -1,5 +1,5 @@
 //jshint ignore: start
-const products = [
+const products = Object.freeze([
 	{
 		id: "adb6f52b-c959-4408-b3ce-d9f425c448dc",
 		category: "Kulaklıklar",
@@ -68,7 +68,7 @@ const products = [
 		discount: 3,
 		attributes: ["Mic", "RGB"],
 		images: ["octave-en-v1.png"],
-		featured: true,
+		featured: false,
 		slider: false,
     featuredbg: "orange"
 	},
@@ -86,7 +86,7 @@ const products = [
 		discount: 0,
 		attributes: ["Mic", "RGB"],
 		images: ["octave-en-v1.png", ],
-		featured: true,
+		featured: false,
 		slider: false,
     featuredbg: "hotpink"
 	},
@@ -124,6 +124,42 @@ const products = [
 		images: ["huavei-D15.png", "h-d15-2.webp", "h-d15-3.webp", "h-d15-4.webp", "h-d15-5.webp"],
 		featured: true,
 		slider: true,
-    featuredbg: "gray"
+    featuredbg: "violet"
 	},
-]
+  {
+		id: "c8584e82-ba63-4e20-a8e6-ca238631b9ed",
+		category: "Bilgisayar",
+		subcategory: "Dizüstü",
+		brand: "Apple",
+		name: "Macbook Air",
+		exp: "APPLE MGNA3TU/A MacBook Air 13.3&quot; Apple M1/512GB SSD/ Laptop Silver",
+		details: "Bütün işlerinizi halledebileceğiniz, M1 işlemcili Apple Dizüstü",
+		color: ["silver"],
+		detailedlist: ["MGNA3TU", "M1", "8 çekirdekli", "13.3&quot;", "512GB SSD", "HD-ready", "15.6&quot;", "2560 x 1600"],
+		price: 20699,
+		discount: 0,
+		attributes: ["M1", "8 çekirdekli", "13.3&quot;", "512GB SSD", "HD-ready", "15.6&quot;", "2560 x 1600"],
+		images: ["MGNA3TU-1.png", "MGNA3TU-2.webp"],
+		featured: true,
+		slider: true,
+    featuredbg: "silver"
+	},
+  {
+		id: "28e8a3ea-68c8-407b-a0d6-5b7a89dd0d8a",
+		category: "Bilgisayar",
+		subcategory: "Dizüstü",
+		brand: "HP",
+		name: "4P3S3ES",
+		exp: "APPLE MGNA3TU/A MacBook Air 13.3&quot; Apple M1/512GB SSD/ Laptop Silver",
+		details: "HP Dizüstü",
+		color: ["gray", "black", "silver"],
+		detailedlist: ["Intel® Core™ i3-1115G8", "Tümleşik: Intel® Grafik Kartı", "13.3&quot;", "256 GB", "Full-HD", "15.6&quot;", "1920 x 1080"],
+		price: 8837.7,
+		discount: 30,
+		attributes: ["Intel® Core™ i3-1115G8", "Tümleşik: Intel® Grafik Kartı", "13.3&quot;", "256 GB", "Full-HD", "15.6&quot;", "1920 x 1080"],
+		images: ["4P3S3ES-2.webp", "4P3S3ES-1.webp", "4P3S3ES-3.webp"],
+		featured: true,
+		slider: true,
+    featuredbg: "dodgerblue"
+	},
+])

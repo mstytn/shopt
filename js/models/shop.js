@@ -37,7 +37,7 @@ class Shop {
   #settingsname
   #guestname
   constructor(debugmode = false) {
-    this.#settingsname = 'shopingo'
+    this.#settingsname = 'shopt'
     this.#guestname = 'random-guest'
     this.observers = []
     this.errorObservers = []

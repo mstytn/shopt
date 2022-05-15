@@ -206,6 +206,10 @@ class ProductList {
         </div>
     `
   }
+
+  update(o) {
+    this.addToList(o.activePageObjects)
+  }
 }
 
 class DetailsModal {
@@ -689,5 +693,51 @@ class UsersNav {
       </svg>`
       this.usersNavButton.title = "Çıkış Yap"
     }
+  }
+}
+
+class ListPaginator {
+  constructor(pageList) {
+    this.pageList = pageList
+    this.paginatorElement = document.querySelector('#paginator')
+    this.paginatorElement.addEventListener('click', this.#btnClick)
+    this.#createButtons()
+  }
+
+  #createButtons() {
+    if (this.pageList === 1)
+      return false
+    this.paginatorElement.innerHTML = ''
+    const prevDisabled = (this.pageList.currentPage === 1) ? ' disabled' : ''
+    const nextDisabled = (this.pageList.currentPage === this.pageList.totalPage) ? ' disabled' : ''
+    let buttons = `<button class="paginator-button" id="prev"${prevDisabled}>&laquo;</button>`
+    for (let index = 1; index <= this.pageList.totalPage; index++) {
+      const ad = (index === this.pageList.currentPage) ? {a: ' active', d: ' disabled'} : {a: '', d: ''}
+      buttons += `<button class="paginator-button${ad.a}" data-page="${index}"${ad.d}>${index}</button>`
+    }
+    buttons += `<button class="paginator-button" id="next"${nextDisabled}>&raquo;</button>`
+    this.paginatorElement.insertAdjacentHTML('beforeend', buttons)
+    return true
+  }
+
+  #btnClick = (event) => {
+    if (event.target.tagName !== 'BUTTON')
+      return
+    switch (event.target.id) {
+      case 'next':
+        this.pageList.next()
+        break
+      case 'prev':
+        this.pageList.prev()
+        break
+      default:
+        const dPage = +event.target.getAttribute('data-page')
+        const test = this.pageList.page(dPage)
+        break
+    } 
+  }
+
+  update(o) {
+    this.#createButtons()
   }
 }

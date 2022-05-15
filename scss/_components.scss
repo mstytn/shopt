@@ -90,6 +90,7 @@ nav {
   }
 }
 
+
 @media screen and (max-width: 720px) {
   nav .left-nav ul li:not(:nth-of-type(1)) {
     display: none;
@@ -474,6 +475,36 @@ nav {
 .products {
   margin-top: 5rem;
   margin-bottom: 5rem;
+  .paginator {
+    padding: 2rem;
+    max-width: 1200px;
+    display: flex;
+    margin-top: 2rem;
+    gap: .6rem;
+    justify-content: center;
+    border-radius: $borderradius;
+    & button {
+      background-color: transparent;
+      border: 1px solid gray;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      outline: none;
+      &:hover {
+        opacity: .5;
+      }
+      &.active {
+        color: crimson;
+        border-color: crimson;
+      }
+      &:disabled {
+        cursor: default;
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
   h3 {
     font-size: 2rem;
     text-align: center;
@@ -493,6 +524,10 @@ nav {
   margin-top: 3rem;
   .product {
     flex: 0 0 275px;
+    opacity: 0;
+    transform: translateY(100px);
+    animation: showList 600ms ease;
+    animation-fill-mode: forwards;
     &__image {
       position: relative;
       background-color: silver;
@@ -564,6 +599,11 @@ nav {
           pointer-events: none;
         }
       }
+    }
+  }
+  @for $i from 1 to 20 {
+    .product:nth-of-type(#{$i}) {
+      animation-delay: #{(100 * $i)}ms;
     }
   }
 }
