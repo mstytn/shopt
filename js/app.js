@@ -54,7 +54,7 @@ shop.addObserver(cartCounter, menuCartPreview)
     .showDiscalimer(() => {console.log('Legal Metin')})
 // Kullanıcı gişi ilemlerini için Modal Dialog Kontrolcüsü
 const sign = new SigForms()
-// Ürün Detaylarının gösterilmesi için Modal Dilog Kontolcüsü
+// Ürün Detaylarıqnın gösterilmesi için Modal Dilog Kontolcüsü
 const detailsModal = new DetailsModal()
 // Son Sepet Görüntülenmesi için Modal Dialog Kontrolcüsü
 const cartModal = new CartSummary()
