@@ -1,10 +1,8 @@
 # SHOPT Front-End Projesi
 
-<img src="./images/shopt-logo.svg" width="200">
-
-<img src="./favicon.svg" width="50">
-
 *Shopt a front-end project*
+
+<img src="./favicon.svg" width="40"> <img src="./images/shopt-logo.svg" width="200"> 
 
 Bir mağaza uygulaması. Tabiki fake. Kullanıcı bilgileri localstorage'da tutuluyor. Yalnızca bir front-end uygulaması olmasından ziyade back-end'i de kendi içerisinde bulunduruyor. Ekstra olarak kullanıcı bilgileri local storage'e yazılmadan önce base64 encde ediliyor.
 
@@ -15,6 +13,8 @@ Bütün site observable pattern kullanıyıor. Yani, sepette, üründe ya da kul
 *The whole site uses the observable pattern. Means, when there is any change in the cart, product or user, the Observer classes that are registered, gets notified. Also when any error is encountered, Toast Observer and the other observers are being dotified.*
 
 Siteyi responsible olarak düşünmedim. Daha çok sayfalama ve ürün gösterimi konusuna eğildim. 
+
+[LIVE:](https://mstytn.github.io/shopt/)
 
 ```javascript
   addObserver(/**/) {
